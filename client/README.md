@@ -2,7 +2,7 @@
 
 Search for your favorite books using the Google Books API!
 
-<b>View Deployed Application Here: </b> [insert link here]
+<b>View Deployed Application Here: </b> https://infinite-inlet-82183.herokuapp.com/
 
 ## Project Summary
 
@@ -15,7 +15,7 @@ This project was a code refactor with the aim to convert the underlying back end
 - View your favorited books on your profile page
 - Delete any books from your current list of saved books
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 # React Usage
 
