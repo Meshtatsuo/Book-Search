@@ -38,6 +38,7 @@ const resolvers = {
       }
 
       const token = signToken(user);
+      console.log("USER SIGNED IN");
       return { token, user };
     },
     saveBook: async (parent, args, context) => {
@@ -47,41 +48,33 @@ const resolvers = {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
           {
-            $push: {
+            $addToSet: {
               savedBooks: { ...args, username: context.user.username },
             },
           },
           { new: true }
-        );
-
+        )
+          // ensure we don't return user's password in response!
+          .select("-__v -password");
+        console.log(updatedUser);
         return updatedUser;
       }
       throw new AuthenticationError("You need to be logged in!");
     },
     removeBook: async (parent, args, context) => {
       if (context.user) {
-        const user = await User.findOne({ where: (_id = context.user.id) });
-        console.log(user.savedBooks);
-        const removalIndex = user.savedBooks.findIndex(
-          (book) => book.bookId !== args.id
-        );
-
-        console.log(removalIndex);
-        const updatedBooks = user.savedBooks.splice(removalIndex, 1);
-
-        console.log(updatedBooks);
-
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
           {
-            savedBooks: updatedBooks,
+            $pull: {
+              savedBooks: { ...args },
+            },
           },
 
-          {
-            new: true,
-          }
-        );
-
+          { new: true }
+        )
+          // ensure we don't return user's password in response!
+          .select("-__v -password");
         return updatedUser;
       }
       throw new AuthenticationError("You need to be logged in!");
