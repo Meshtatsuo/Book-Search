@@ -38,11 +38,10 @@ const SignupForm = () => {
 
     // use try/catch instead of promises to handle errors
     try {
-      const { data } = await addUser({
+      const data = await addUser({
         variables: { ...userFormData },
       });
-
-      Auth.login(data.addUser.token);
+      Auth.login(data.data.addUser.token);
     } catch (e) {
       console.error(e);
     }
