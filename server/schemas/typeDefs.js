@@ -2,12 +2,14 @@ const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
   type Book {
+    _id: ID
     bookId: String
     authors: [String]
     description: String
     title: String
     image: String
     link: String
+    username: String
   }
 
   type User {
@@ -37,8 +39,8 @@ const typeDefs = gql`
       image: String
       link: String
       title: String!
-    ): Book
-    removeBook: Book
+    ): User
+    removeBook(bookId: String!): User
   }
 `;
 

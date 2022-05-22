@@ -1,5 +1,7 @@
 const { AuthenticationError } = require("apollo-server-express");
-const { User, Book } = require("../models");
+const { argsToArgsConfig } = require("graphql/type/definition");
+const { User } = require("../models");
+const bookSchema = require("../models/Book");
 const { signToken } = require("../utils/auth");
 
 const resolvers = {
@@ -40,22 +42,50 @@ const resolvers = {
     },
     saveBook: async (parent, args, context) => {
       if (context.user) {
-        const book = await Book.create({ ...args });
-
-        await User.findByIdAndUpdate(
-          { $push: { savedBooks: book } },
+        console.log(context.user._id);
+        console.log(args);
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          {
+            $push: {
+              savedBooks: { ...args, username: context.user.username },
+            },
+          },
           { new: true }
         );
 
-        return book;
+        return updatedUser;
       }
       throw new AuthenticationError("You need to be logged in!");
     },
-    removeBook: async(parent, args, context) => {
-        if(context.user) {
-            
-        }
-    }
+    removeBook: async (parent, args, context) => {
+      if (context.user) {
+        const user = await User.findOne({ where: (_id = context.user.id) });
+        console.log(user.savedBooks);
+        const removalIndex = user.savedBooks.findIndex(
+          (book) => book.bookId !== args.id
+        );
+
+        console.log(removalIndex);
+        const updatedBooks = user.savedBooks.splice(removalIndex, 1);
+
+        console.log(updatedBooks);
+
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          {
+            savedBooks: updatedBooks,
+          },
+
+          {
+            new: true,
+          }
+        );
+
+        return updatedUser;
+      }
+      throw new AuthenticationError("You need to be logged in!");
+    },
   },
 };
 
